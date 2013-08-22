@@ -1,4 +1,4 @@
-import time, json, curses, wiringpi
+import time, json, curses
 
 SOFTPWM_SUPPORT = True
 try:
