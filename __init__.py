@@ -5,7 +5,6 @@ try:
 	import wiringpi2 as wiringpi
 except Exception, e:
 	SOFTPWM_SUPPORT = False
-finally:
 	import wiringpi as wiringpi
 
 PWM_MAX = 1023
