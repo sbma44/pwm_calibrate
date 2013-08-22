@@ -1,4 +1,4 @@
-import time, json, curses
+import time, json, curses, os
 
 SOFTPWM_SUPPORT = True
 try:
@@ -46,10 +46,12 @@ class PWMCalibrator(object):
 		        self.smoothing = smoothing
 
 		if calibration_file is not None:
-			self.load(calibration_file)
+			self.calibration_file = calibration_file
+		else:
+			self.calibration_file = DEFAULT_CALIBRATION_FILENAME
 
-	def load(self, filename=DEFAULT_CALIBRATION_FILENAME):
-		f = open(filename, 'r')
+	def load(self):
+		f = open(self.calibration_file, 'r')
 		self.calibration = json.load(f)
 		f.close()
 
@@ -145,8 +147,8 @@ class PWMCalibrator(object):
 		self.calibration.sort(key=lambda x: x[0])
 
 
-	def save(self, filename=DEFAULT_CALIBRATION_FILENAME):
-		f = open(filename, 'w')
+	def save(self):
+		f = open(self.calibration_file, 'w')
 		json.dump(self.calibration, f)
 		f.close()
 
