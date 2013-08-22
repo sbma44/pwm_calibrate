@@ -9,9 +9,11 @@ For instance! You've connected a VU meter to the Raspberry Pi's hardware PWM out
 
 * More importantly, 50% power (512) might not move the needle to 50% on the meter (100). Whoops!
 
-This class facilitates the calibration of a PWM output by stepping through it and collecting user input. The result is stored to disk and reloaded as needed. Values located between steps are linearly interpolated (if this provides inaccurate results, recalibrate with more steps).
+This class facilitates the calibration of a PWM output by sweeping through its output range (max to zero) and collecting user input to measure the location of steps (e.g. notches on a meter, measured loudness or brightness levels). The result is stored to disk as JSON and reloaded as needed. 
 
-The class also brokers the use of software or hardware routines (depending on the pin) if wiringpi2 is installed. If only wiringpi v 1.0 is available, only PWM output is enabled.
+You can then set the value by simply asking for the step; the class will figure out the appropriate PWM setting based on the loaded calibration file. Values located between steps are linearly interpolated (if this provides inaccurate results, you should recalibrate with more steps).
+
+The class also brokers the use of software or hardware routines (depending on the pin) if wiringpi2 is installed. If only wiringpi v1.0 is available, only PWM output is enabled.
 
 Notes
 -----
