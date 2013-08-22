@@ -28,3 +28,8 @@ TO DO
 -----
 
 * Calibration is currently dependent on curses. Adding routines to enable GPIO input might be nice.
+
+Thanks
+------
+
+Enormous thanks to [Gordon Henderson](http://projects.drogon.net/) for writing the WiringPi library!
