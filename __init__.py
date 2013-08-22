@@ -26,16 +26,17 @@ class PWMCalibrator(object):
 		if wiringpi_obj is not None:
 			self.wp = wiringpi_obj
 		else:
-			self.wp = wiringpi.GPIO(wiringpi.GPIO.WPI_MODE_PINS)
+			wiringpi.wiringPiSetup()
+			# self.wp = wiringpi.GPIO(wiringpi.GPIO.WPI_MODE_PINS)
 		
 		# PWM: hardware or software?
 		if (not SOFTPWM_SUPPORT) or (self.pin==WIRINGPI_PWM_PIN):
-			self.wp.pinMode(self.pin, self.wp.PWM_OUTPUT)
-			self.pwm_write = self.wp.pwmWrite
+			wiringpi.pinMode(self.pin, wiringpi.GPIO.PWM_OUTPUT)
+			self.pwm_write = wiringpi.pwmWrite
 			self.pwm_max = PWM_MAX
 		else:
-			self.wp.softPwmCreate(self.pin, 0, SOFT_PWM_MAX)
-			self.pwm_write = self.wp.softPwmWrite
+			wiringpi.softPwmCreate(self.pin, 0, SOFT_PWM_MAX)
+			self.pwm_write = wiringpi.softPwmWrite
 			self.pwm_max = kwargs.get('soft_pwm_max', SOFT_PWM_MAX)
 
 		self.pwm_value = 0
