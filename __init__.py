@@ -63,10 +63,10 @@ class PWMCalibrator(object):
 		if value<self.calibration[0][0] or value>self.calibration[-1][0]:
 			raise Exception("Requested value is outside of calibration range [%d, %d]" % (self.calibration[0][0], self.calibration[-1][0]))
 
-                # check for an exact value match & return it if found
-                for x in self.calibration:
-                        if x[0]==value:
-                                return x[1]
+		# check for an exact value match & return it if found
+		for x in self.calibration:
+			if x[0]==value:
+				return x[1]
 
 		for i in range(0, len(self.calibration)-1):
 			if value>=self.calibration[i][0] and value<self.calibration[i+1][0]:
@@ -76,7 +76,13 @@ class PWMCalibrator(object):
 		pwm_value = int(self.calibration[bottom_step][1] + round(pct_diff * (self.calibration[bottom_step + 1][1] - self.calibration[bottom_step][1])))
 		return pwm_value
 
-	def setPWM(self, value):
+	def get_range(self):
+		return (self.calibration[0][0], self.calibration[-1][0])
+
+	def setPWM(self, value): # backward compatibility
+		self.set(value)
+
+	def set(self, value):
 		target_pwm_value = self._calculatePWM(value)
 		if self.smoothing is not None:
 			while self.pwm_value!=target_pwm_value:
