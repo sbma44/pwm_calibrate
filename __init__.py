@@ -111,9 +111,10 @@ class PWMCalibrator(object):
 		self.calibration.append((steps, self.pwm_max))
 
 		# init curses, preventing delay on keypress
-		stdscr = curses.initscr()
+		stdscr = curses.initscr()		
 		curses.cbreak()
 		stdscr.nodelay(1)
+		stdscr.clear()
 
 		# step down through the PWM range
 		current_step = steps - 1
@@ -126,9 +127,12 @@ class PWMCalibrator(object):
 			stdscr.addstr(3,0,"      step      |        value     ")
 			stdscr.addstr(4,0,"-----------------------------------")
 			for (j,x) in enumerate(self.calibration):
-				stdscr.addstr(5+j, 7 - len(str(x[0])), str(x[0]))
-				stdscr.addstr(5+j, 16, "|")
-				stdscr.addstr(5+j, 30 - len(str(x[1])), str(x[1]))
+				try:
+					stdscr.addstr(5+j, max(0, 7 - len(str(x[0])), str(x[0])))
+					stdscr.addstr(5+j, 16, "|")
+					stdscr.addstr(5+j, max(0, 30 - len(str(x[1])), str(x[1])))
+				except:
+					pass
 			stdscr.refresh()
 
 			key = stdscr.getch()
