@@ -5,7 +5,7 @@ def readme():
         return f.read()
 
 setup(name='pwm_calibrate',
-      version='0.2',
+      version='0.3',
       description='Provides PWM calibration tools for use on the Raspberry Pi',
       url='http://github.com/sbma44/pwm_calibrate',
       author='Tom Lee',
