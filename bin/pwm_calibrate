@@ -12,6 +12,6 @@ pin = 1
 if args.pin and args.pin!=1:
 	pin = args.pin
 
-c = PWMCalibrator(pin=pin)
+c = pwm_calibrate.PWMCalibrator(pin=pin)
 c.calibrate()
 print c.stringify_calibration()
