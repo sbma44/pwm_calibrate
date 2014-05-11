@@ -1,9 +1,9 @@
-PWM Calibrate
-=============
+PWM Calibrate v 0.3
+===================
 
-Raspberry Pi helper class for linear calibration of outputs that respond nonlinearly.
+A Raspberry Pi helper class for linear calibration of outputs that respond nonlinearly. This is particularly useful when driving VU meters/panel meters/[galvonometers](http://en.wikipedia.org/wiki/Galvanometer)/whatever you want to call them from the Raspberry Pi, but there are probably other applications as well.
 
-For instance! You've connected a VU meter to the Raspberry Pi's hardware PWM output (pin 1). The PWM output can be set to 1024 distinct levels. The meter goes from 1 to 200. You want to set the meter to 100. You have two problems:
+For instance: you've connected a VU meter to the Raspberry Pi's hardware PWM output (pin 1). The PWM output can be set to 1024 distinct levels. The meter goes from 1 to 200. You want to set the meter to 100. You have two problems:
 
 * Converting from "100" to "512" involves some extremely simple math (ugh)
 
@@ -14,6 +14,15 @@ This class facilitates the calibration of a PWM output by sweeping through its o
 You can then set the value by simply asking for the step; the class will figure out the appropriate PWM setting based on the loaded calibration file. Values located between steps are linearly interpolated (if this provides inaccurate results, you should recalibrate with more steps).
 
 The class also brokers the use of software or hardware routines (depending on the pin) if wiringpi2 is installed. If only wiringpi v1.0 is available, only PWM output is enabled.
+
+Installation
+------------
+
+> `pip install pwm_calibrate`
+
+Alternately, download a copy of this repository and run
+
+> `python setup.py install`
 
 Command Line Usage
 ------------------
@@ -51,3 +60,4 @@ Thanks
 ------
 
 Enormous thanks to [Gordon Henderson](http://projects.drogon.net/) for writing the WiringPi library!
+
