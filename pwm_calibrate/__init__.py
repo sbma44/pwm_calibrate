@@ -18,10 +18,10 @@ DEFAULT_CALIBRATION_FILENAME = "calibration.json"
 
 class PWMCalibrator(object):
 	"""Helper class for calibrating PWM-driven VU meters"""
-	def __init__(self, pin=DEFAULT_PIN, calibration_file=None, smoothing=None, wiringpi_obj=None, **kwargs):
+	def __init__(self, pin=DEFAULT_PIN, calibration_file=None, smoothing=None, wiringpi_obj=None, zero_pin=None, **kwargs):
 		super(PWMCalibrator, self).__init__()
 		
-		if not SOFTPWM_SUPPORT and pin!=WIRINGPI_PWM_PIN:
+		if not SOFTPWM_SUPPORT and ((pin!=WIRINGPI_PWM_PIN) or zero_pin!=None):
 			raise Exception("No soft PWM support (is wiringpi2 installed?). Only pin 1 may be used.")
 
 		self.pin = pin
@@ -39,7 +39,18 @@ class PWMCalibrator(object):
 		else:
 			wiringpi.softPwmCreate(self.pin, 0, SOFT_PWM_MAX)
 			self.pwm_write = wiringpi.softPwmWrite
-			self.pwm_max = kwargs.get('soft_pwm_max', SOFT_PWM_MAX)
+			self.pwm_max = kwargs.get('soft_pwm_max', SOFT_PWM_MAX)		
+
+		# zero out any zero pins, as necessary
+		# (this is used for bidirectional meters; by default the pi's pins
+		# are in a high-impedence mode that will prevent adequate calibration)
+		if zero_pin!=None:
+			if zero_pin==WIRINGPI_PWM_PIN:
+				wiringpi.pinMode(zero_pin, wiringpi.GPIO.PWM_OUTPUT)
+				wiringpi.pwmWrite(zero_pin, 0)
+			else:
+				wiringpi.softPwmCreate(zero_pin, 0, SOFT_PWM_MAX)
+				wiringpi.softPwmWrite(zero_pin, 0)
 
 		self.pwm_value = 0
 		self.calibration = []

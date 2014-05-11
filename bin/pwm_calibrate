@@ -5,6 +5,7 @@ import pwm_calibrate
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-p", "--pin", type=int, help="The Raspberry Pi pin used for PWM (default: 1)")
+parser.add_argument("-z", "--zero", type=int, help="Pin to zero out (helpful if using a bidirectional meter with two PWMs)")
 parser.add_argument("output_file", type=str, help="The output filename")
 args = parser.parse_args()
 
@@ -12,6 +13,10 @@ pin = 1
 if args.pin and args.pin!=1:
 	pin = args.pin
 
-c = pwm_calibrate.PWMCalibrator(pin=pin)
+zero_pin=None
+if args.zero and args.zero!=None:
+	zero_pin = args.zero
+
+c = pwm_calibrate.PWMCalibrator(pin=pin, zero_pin=zero_pin, calibration_file=args.output_file)
 c.calibrate()
-print c.stringify_calibration()
+c.save()
