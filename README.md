@@ -1,4 +1,4 @@
-PWM Calibrate v 0.3
+PWM Calibrate v 0.4
 ===================
 
 A Raspberry Pi helper class for linear calibration of outputs that respond nonlinearly. This is particularly useful when driving VU meters/panel meters/[galvonometers](http://en.wikipedia.org/wiki/Galvanometer)/whatever you want to call them from the Raspberry Pi, but there are probably other applications as well.
