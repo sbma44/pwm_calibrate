@@ -6,7 +6,7 @@ import datetime
 SOFTPWM_SUPPORT = True
 try:
 	import wiringpi2 as wiringpi
-except Exception, e:
+except:
 	SOFTPWM_SUPPORT = False
 	import wiringpi as wiringpi
 
@@ -20,7 +20,7 @@ class PWMCalibrator(object):
 	"""Helper class for calibrating PWM-driven VU meters"""
 	def __init__(self, pin=DEFAULT_PIN, calibration_file=None, smoothing=None, wiringpi_obj=None, zero_pin=None, **kwargs):
 		super(PWMCalibrator, self).__init__()
-		
+
 		if not SOFTPWM_SUPPORT and ((pin!=WIRINGPI_PWM_PIN) or zero_pin!=None):
 			raise Exception("No soft PWM support (is wiringpi2 installed?). Only pin 1 may be used.")
 
@@ -30,7 +30,7 @@ class PWMCalibrator(object):
 			self.wp = wiringpi_obj
 		else:
 			wiringpi.wiringPiSetup()
-		
+
 		# PWM: hardware or software?
 		if (not SOFTPWM_SUPPORT) or (self.pin==WIRINGPI_PWM_PIN):
 			wiringpi.pinMode(self.pin, wiringpi.GPIO.PWM_OUTPUT)
@@ -39,7 +39,7 @@ class PWMCalibrator(object):
 		else:
 			wiringpi.softPwmCreate(self.pin, 0, SOFT_PWM_MAX)
 			self.pwm_write = wiringpi.softPwmWrite
-			self.pwm_max = kwargs.get('soft_pwm_max', SOFT_PWM_MAX)		
+			self.pwm_max = kwargs.get('soft_pwm_max', SOFT_PWM_MAX)
 
 		# zero out any zero pins, as necessary
 		# (this is used for bidirectional meters; by default the pi's pins
@@ -55,9 +55,9 @@ class PWMCalibrator(object):
 		self.pwm_value = 0
 		self.calibration = []
                 if smoothing is True:
-                        self.smoothing = 0.005
-                else:	
-		        self.smoothing = smoothing
+                    self.smoothing = 0.005
+                else:
+		            self.smoothing = smoothing
 
 		if calibration_file is not None:
 			self.calibration_file = calibration_file
@@ -65,21 +65,20 @@ class PWMCalibrator(object):
 			self.calibration_file = DEFAULT_CALIBRATION_FILENAME
 
 	def load(self):
-		f = open(self.calibration_file, 'r')
-		self.calibration = json.load(f)
-		f.close()
+		with open(self.calibration_file, 'r') as f:
+		    self.calibration = json.load(f)
 
 	def save(self):
-		f = open(self.calibration_file, 'w')		
-		f.write(self.stringify_calibration())
-		f.close()
+		with open(self.calibration_file, 'w') as f:
+		    f.write(self.stringify_calibration())
+
 
 	def stringify_calibration(self):
 		return json.dumps(self.calibration)
 
 	def _calculatePWM(self,value):
 		bottom_step = 0
-                pwm_value = 0
+            pwm_value = 0
 
 		if value<self.calibration[0][0] or value>self.calibration[-1][0]:
 			raise Exception("Requested value is outside of calibration range [%d, %d]" % (self.calibration[0][0], self.calibration[-1][0]))
@@ -107,7 +106,7 @@ class PWMCalibrator(object):
 		target_pwm_value = self._calculatePWM(value)
 		if self.smoothing is not None:
 			while self.pwm_value!=target_pwm_value:
-				delta = self.pwm_value>target_pwm_value and -1 or 1				
+				delta = self.pwm_value>target_pwm_value and -1 or 1
 				self.pwm_write(self.pin, self.pwm_value + delta)
 				self.pwm_value = self.pwm_value + delta
 				time.sleep(self.smoothing)
@@ -127,23 +126,23 @@ class PWMCalibrator(object):
 			steps = int(raw_input("Adjust your meter it is at maximum, then enter the desired number of calibration observations/steps and press <enter>: "))
 		else:
 			raw_input("Adjust your meter it is at maximum (%d), then press <enter>" % steps)
-		
+
 		# set the top step
 		self.calibration.append((steps, self.pwm_max))
 
 		# init curses, preventing delay on keypress
-		stdscr = curses.initscr()		
+		stdscr = curses.initscr()
 		curses.cbreak()
 		stdscr.nodelay(1)
 		stdscr.clear()
 
 		# step down through the PWM range
 		current_step = steps - 1
-		for i in range(self.pwm_max, 0, -1):			
+		for i in range(self.pwm_max, 0, -1):
 			self.pwm_write(self.pin, i)
 
 			stdscr.addstr(0,0,"Press the spacebar when the meter reads %d" % (current_step))
-			
+
 			stdscr.addstr(2,0,"=== Captured Calibration Values ===")
 			stdscr.addstr(3,0,"      step      |        value     ")
 			stdscr.addstr(4,0,"-----------------------------------")
@@ -177,4 +176,3 @@ class PWMCalibrator(object):
 
 		# sort the calibration list
 		self.calibration.sort(key=lambda x: x[0])
-
